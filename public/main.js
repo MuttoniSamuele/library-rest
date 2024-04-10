@@ -65,6 +65,7 @@ async function handleAddBook() {
   // altrimenti mostro un errore
   if (res.ok) {
     addBookError.classList.add("hidden");
+    titleInput.value = authorInput.value = publisherInput.value = priceInput.value = "";
     await displayBooks();
   } else {
     addBookError.classList.remove("hidden");
