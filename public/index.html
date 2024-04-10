@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Library</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <script defer src="main.js"></script>
+  <style>
+    .error {
+      color: red;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Book Library</h1>
+
+    <hr>
+
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="author">Author</label>
+    <input type="text" id="author" name="author" required>
+
+    <label for="publisher">Publisher</label>
+    <input type="text" id="publisher" name="publisher" required>
+
+    <label for="price">Price</label>
+    <input type="number" step="0.01" min="0" id="price" name="price" required>
+
+    <p id="add-book-error" class="hidden error">Invalid data</p>
+
+    <button id="add-book-btn">Add Book</button>
+    <hr>
+
+    <div id="books-container"></div>
+  </main>
+</body>
+
+</html>
