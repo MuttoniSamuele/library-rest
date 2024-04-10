@@ -1,3 +1,4 @@
+// JSON di tutti i libri
 export const BOOKS = [
   { id: 1, title: "Il Signore degli Anelli", author: "J.R.R. Tolkien", publisher: "Bompiani", price: 20 },
   { id: 2, title: "Harry Potter e la Pietra Filosofale", author: "J.K. Rowling", publisher: "Salani", price: 15 },
@@ -51,8 +52,10 @@ export const BOOKS = [
   { id: 50, title: "La fattoria degli animali", author: "George Orwell", publisher: "Einaudi", price: 17 },
 ];
 
+// Contatore incrementale degli ID
 let idCount = 51;
 
+// Funzione che usa idCount per accertarsi di generare ID univoci
 export function generateId() {
   return idCount++;
 }
