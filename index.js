@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-import { BOOKS, generateId } from "./books.js";
+import { getBooks, saveBooks, generateId } from "./books.js";
 
 // I metodi HTTP utilizzati, sono stati scelti secondo i principi REST
 
@@ -23,13 +23,13 @@ app.use(bodyParser.json());
 app.use("/", express.static(publicPath));
 
 // Rotta che accetta il metodo GET per ottenere il JSON di tutti i libri
-app.get("/api/books", (_req, res) => {
+app.get("/api/books", async (_req, res) => {
   // Resonde con un codice 200 (Ok) e il JSON dei libri
-  res.status(200).json({ books: BOOKS });
+  res.status(200).json({ books: await getBooks() });
 });
 
 // Rotta che accetta il metodo POST per aggiungere un nuovo libro
-app.post("/api/book", (req, res) => {
+app.post("/api/book", async (req, res) => {
   // Controllo che tutti i parametri del libro siano presenti nel JSON in input
   for (const field of ["title", "author", "publisher", "price"]) {
     // Se anche uno solo manca o e' vuoto, restituisce il codice 400
@@ -43,34 +43,42 @@ app.post("/api/book", (req, res) => {
   if (isNaN(price) || price < 0) {
     return res.status(400).send("Bad Request");
   }
-  // Tutti i parametri sono validi, aggiungo il libro
-  BOOKS.push({
-    id: generateId(),
+  // Tutti i parametri sono validi, ottengo l'array di libri
+  const books = await getBooks();
+  // Aggiungo il libro
+  books.push({
+    id: generateId(books),
     title: String(req.body.title),
     author: String(req.body.author),
     publisher: String(req.body.publisher),
     price
   });
+  // Salvo i libri
+  await saveBooks(books);
   // Rispondo con un codice 201 per indicare che e' stata creata una risorsa
   res.status(201).send("Created");
 });
 
 // Rotta che accetta il metodo DELETE per eliminare un libro dato il suo ID
-app.delete("/api/book/:id", (req, res) => {
+app.delete("/api/book/:id", async (req, res) => {
   // Prendo l'ID dal parametro e provo a convertirlo in int
   const id = parseInt(req.params.id);
   // Se l'operazione fallisce o il numero e' negativo restituisce 400
   if (isNaN(id) || id < 0) {
     return res.status(400).send("Bad Request");
   }
+  // Ottengo l'array di libri
+  const books = await getBooks();
   // Cerco l'indice del libro dato il suo ID
-  const index = BOOKS.findIndex((b) => b.id === id);
+  const index = books.findIndex((b) => b.id === id);
   // Se non lo trova rispondo con codice 404
   if (index === -1) {
     return res.status(404).send("Not Found");
   }
   // Elimino il libro
-  BOOKS.splice(index, 1);
+  books.splice(index, 1);
+  // Salvo i libri
+  await saveBooks(books);
   // Rispondo con codice 200
   res.status(200).send("Ok");
 });
