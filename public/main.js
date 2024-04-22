@@ -8,6 +8,10 @@ const authorInput = document.getElementById("author");
 const publisherInput = document.getElementById("publisher");
 const priceInput = document.getElementById("price");
 const addBookError = document.getElementById("add-book-error");
+const titleError = document.getElementById("title-error");
+const authorError = document.getElementById("author-error");
+const publisherError = document.getElementById("publisher-error");
+const priceError = document.getElementById("price-error");
 
 // Funzione di entrata del programma
 function main() {
@@ -46,6 +50,38 @@ function displayBook(book) {
 
 // Funzione che aggiunge un libro
 async function handleAddBook() {
+  // Controllo che tutti i campi siano validi
+  let valid = true;
+  const inputErrorPairs = [
+    [titleInput, titleError],
+    [authorInput, authorError],
+    [publisherInput, publisherError]
+  ];
+  for (const [input, error] of inputErrorPairs) {
+    if (input.value === "") {
+      error.innerText = "(Missing)";
+      valid = false;
+    } else {
+      error.innerText = "";
+    }
+  }
+  const price = parseFloat(priceInput.value);
+  if (priceInput.value === "") {
+    priceError.innerText = "(Missing)";
+    valid = false;
+  } else if (isNaN(price) || !/^[0-9\.\-]+$/.test(priceInput.value)) {
+    priceError.innerText = "(Invalid number)";
+    valid = false;
+  } else if (price < 0) {
+    priceError.innerText = "(Can't be negative)";
+    valid = false;
+  } else {
+    priceError.innerText = "";
+  }
+  // Se non sono validi, esco
+  if (!valid) {
+    return;
+  }
   // Mando la richiesta POST al server contenente nel body il JSON con i dati del libro
   const res = await fetch("/api/book", {
     method: "POST",
@@ -58,7 +94,7 @@ async function handleAddBook() {
       title: titleInput.value,
       author: authorInput.value,
       publisher: publisherInput.value,
-      price: priceInput.value,
+      price: price,
     })
   });
   // Se l'operazione e' andata a buon fine, mostro la lista aggiornata dei libri
